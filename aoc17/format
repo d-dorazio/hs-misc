@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+set -eu
+
+for f in ./**/*.hs; do
+    if ! git check-ignore "$f"; then
+        brittany --columns 100 --write-mode inplace "$f"
+    fi
+done
