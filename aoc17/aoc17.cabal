@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 3e98860571618b48e3b3c90f65c7b0ae25b0832372ab959dce385626c7af715e
+-- hash: 43b0264771a68ad346b9b229d4a640dc0269396d0a956ac92bb4b9b8c059b726
 
 name:           aoc17
 version:        0.1.0.0
@@ -52,6 +52,7 @@ library
       Passphrase
       PermutationPromenade
       Registers
+      SpinLock
       SpiralMemory
       Stream
       TwistyTrampolines

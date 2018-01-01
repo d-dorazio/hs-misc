@@ -19,6 +19,7 @@ import PacketScanner
 import DiskFrag
 import DuelingGenerators
 import PermutationPromenade
+import SpinLock
 
 
 data Cli = Cli {
@@ -65,4 +66,5 @@ main = do
     , showFn DiskFrag.solve
     , \pa _ -> show . DuelingGenerators.solve $ pa
     , PermutationPromenade.solve
+    , showFn SpinLock.solve
     ]

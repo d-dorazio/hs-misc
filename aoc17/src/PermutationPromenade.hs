@@ -1,4 +1,10 @@
-module PermutationPromenade where
+module PermutationPromenade (
+    solve
+  , Pos
+  , DanceMove (..)
+  , interpretDanceMoves
+  , danceMoveParser
+) where
 
 import Control.Applicative ((*>), (<|>))
 
