@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 1a741e4e240a6f97d6d599a380b736fcefead53edfeb39a8920c11ae50243da2
+-- hash: 3e98860571618b48e3b3c90f65c7b0ae25b0832372ab959dce385626c7af715e
 
 name:           aoc17
 version:        0.1.0.0
@@ -50,6 +50,7 @@ library
       MemoryReallocation
       PacketScanner
       Passphrase
+      PermutationPromenade
       Registers
       SpiralMemory
       Stream

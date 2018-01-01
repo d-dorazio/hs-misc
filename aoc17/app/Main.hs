@@ -18,6 +18,8 @@ import DigitalPlumber
 import PacketScanner
 import DiskFrag
 import DuelingGenerators
+import PermutationPromenade
+
 
 data Cli = Cli {
     _day :: Int
@@ -62,4 +64,5 @@ main = do
     , PacketScanner.solve
     , showFn DiskFrag.solve
     , \pa _ -> show . DuelingGenerators.solve $ pa
+    , PermutationPromenade.solve
     ]
