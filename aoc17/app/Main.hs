@@ -21,6 +21,7 @@ import DuelingGenerators
 import PermutationPromenade
 import SpinLock
 import Duet
+import Tubes
 
 
 data Cli = Cli {
@@ -69,4 +70,5 @@ main = do
     , PermutationPromenade.solve
     , showFn SpinLock.solve
     , Duet.solve
+    , Tubes.solve
     ]

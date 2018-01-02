@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e7833d86617a332bca9ca924c0d0dc1578050d32d1a41debfe92b1b1d40dd2a5
+-- hash: 5afc1d7abf0cb6e8214f103dcf7a3f0a77985b3f25d48168a160a2ad2cfc5e13
 
 name:           aoc17
 version:        0.1.0.0
@@ -56,6 +56,7 @@ library
       SpinLock
       SpiralMemory
       Stream
+      Tubes
       TwistyTrampolines
   other-modules:
       Paths_aoc17
