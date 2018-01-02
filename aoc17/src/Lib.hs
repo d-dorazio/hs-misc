@@ -81,3 +81,6 @@ signedDecimal = L.signed spaceConsumer decimal
 
 parens :: Parser a -> Parser a
 parens = between (symbol "(") (symbol ")")
+
+angles :: Parser a -> Parser a
+angles = between (symbol "<") (symbol ">")

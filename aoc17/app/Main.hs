@@ -22,6 +22,7 @@ import PermutationPromenade
 import SpinLock
 import Duet
 import Tubes
+import ParticleSwarm
 
 
 data Cli = Cli {
@@ -71,4 +72,5 @@ main = do
     , showFn SpinLock.solve
     , Duet.solve
     , Tubes.solve
+    , ParticleSwarm.solve
     ]
