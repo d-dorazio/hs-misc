@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 43b0264771a68ad346b9b229d4a640dc0269396d0a956ac92bb4b9b8c059b726
+-- hash: e7833d86617a332bca9ca924c0d0dc1578050d32d1a41debfe92b1b1d40dd2a5
 
 name:           aoc17
 version:        0.1.0.0
@@ -44,6 +44,7 @@ library
       DigitalPlumber
       DiskFrag
       DuelingGenerators
+      Duet
       HexEd
       KnotHash
       Lib
