@@ -23,6 +23,7 @@ import SpinLock
 import Duet
 import Tubes
 import ParticleSwarm
+import FractalArt
 
 
 data Cli = Cli {
@@ -73,4 +74,5 @@ main = do
     , Duet.solve
     , Tubes.solve
     , ParticleSwarm.solve
+    , FractalArt.solve
     ]

@@ -2,9 +2,9 @@ module Lib where
 
 import Control.Applicative
 
-import Data.Bits (FiniteBits, finiteBitSize, testBit)
+import Data.Bits (Bits, FiniteBits, finiteBitSize, testBit, shiftL, (.|.))
 import Data.Function (on)
-import Data.List (sortBy)
+import Data.List (sortBy, transpose)
 import Data.Void
 
 import qualified Data.Map as M
@@ -31,10 +31,8 @@ buildCountMap = foldr (M.alter incCount) M.empty
   incCount Nothing  = Just 1
   incCount (Just c) = Just (c + 1)
 
-
 sortByLeastCommon :: (Foldable f, Ord a) => f a -> [a]
 sortByLeastCommon = map fst . sortBy (compare `on` snd) . M.toList . buildCountMap
-
 
 chunksOf :: Int -> [a] -> [[a]]
 chunksOf _ [] = []
@@ -47,12 +45,24 @@ minmax = foldr go Nothing
   go x Nothing         = Just (x, x)
   go x (Just (mi, ma)) = Just (min mi x, max ma x)
 
-
 stripWs :: String -> String
 stripWs = T.unpack . T.strip . T.pack
 
 bits :: (FiniteBits b) => b -> [Bool]
 bits b = map (testBit b) $ reverse [0 .. finiteBitSize b - 1]
+
+bitsToNum :: (Num b, Bits b) => [Bool] -> b
+bitsToNum = foldr (.|.) 0 . zipWith (flip shiftL) [0 ..] . reverse . map (\b -> if b then 1 else 0)
+
+rotate :: Int -> [a] -> [a]
+rotate _ [] = []
+rotate n xs = zipWith const (drop n (cycle xs)) xs
+
+rotateCw :: [[a]] -> [[a]]
+rotateCw = transpose . reverse
+
+rotations :: [[a]] -> [[[a]]]
+rotations grid = scanr (const rotateCw) grid ([1 .. 3] :: [Int])
 
 --------------------------------------------------------------------
 -- Parser
