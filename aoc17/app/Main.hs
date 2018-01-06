@@ -24,6 +24,7 @@ import Duet
 import Tubes
 import ParticleSwarm
 import FractalArt
+import Virus
 
 
 data Cli = Cli {
@@ -75,4 +76,5 @@ main = do
     , Tubes.solve
     , ParticleSwarm.solve
     , FractalArt.solve
+    , Virus.solve
     ]

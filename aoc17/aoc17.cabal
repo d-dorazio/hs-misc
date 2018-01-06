@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 07308444c6f21799d620de4ccafaf99de9ec1899b20110c85551d75120307496
+-- hash: 4e9997768bc18c240636856d4c12945d75196c4004ee2c20fa079cbc724726f0
 
 name:           aoc17
 version:        0.1.0.0
@@ -33,6 +33,7 @@ library
   build-depends:
       base >=4.7 && <5
     , containers
+    , hashtables
     , megaparsec
     , primitive
     , text
@@ -60,6 +61,7 @@ library
       Stream
       Tubes
       TwistyTrampolines
+      Virus
   other-modules:
       Paths_aoc17
   default-language: Haskell2010
@@ -73,6 +75,7 @@ executable aoc
       aoc17
     , base >=4.7 && <5
     , containers
+    , hashtables
     , megaparsec
     , optparse-applicative
     , primitive
@@ -92,6 +95,7 @@ test-suite aoc17-test
       aoc17
     , base >=4.7 && <5
     , containers
+    , hashtables
     , megaparsec
     , primitive
     , text
