@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 4e9997768bc18c240636856d4c12945d75196c4004ee2c20fa079cbc724726f0
+-- hash: 681fc836723030161ff86e76384907e2ef82765b4622a1497af9625d9babd8cc
 
 name:           aoc17
 version:        0.1.0.0
@@ -42,6 +42,7 @@ library
       Captcha
       Checksum
       Circus
+      CoprocessorConflagration
       DigitalPlumber
       DiskFrag
       DuelingGenerators

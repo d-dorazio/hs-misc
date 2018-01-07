@@ -25,6 +25,7 @@ import Tubes
 import ParticleSwarm
 import FractalArt
 import Virus
+import CoprocessorConflagration
 
 
 data Cli = Cli {
@@ -77,4 +78,5 @@ main = do
     , ParticleSwarm.solve
     , FractalArt.solve
     , Virus.solve
+    , CoprocessorConflagration.solve
     ]
