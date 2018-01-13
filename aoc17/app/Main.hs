@@ -26,6 +26,7 @@ import ParticleSwarm
 import FractalArt
 import Virus
 import CoprocessorConflagration
+import ElectroMagneticMoat
 
 
 data Cli = Cli {
@@ -79,4 +80,5 @@ main = do
     , FractalArt.solve
     , Virus.solve
     , CoprocessorConflagration.solve
+    , ElectroMagneticMoat.solve
     ]

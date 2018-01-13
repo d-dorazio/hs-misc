@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 681fc836723030161ff86e76384907e2ef82765b4622a1497af9625d9babd8cc
+-- hash: cba6f3e5b62198569e5992107326726aa548be59982635916016e6a3ab295d28
 
 name:           aoc17
 version:        0.1.0.0
@@ -47,6 +47,7 @@ library
       DiskFrag
       DuelingGenerators
       Duet
+      ElectroMagneticMoat
       FractalArt
       HexEd
       KnotHash
