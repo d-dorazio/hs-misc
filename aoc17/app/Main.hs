@@ -27,6 +27,7 @@ import FractalArt
 import Virus
 import CoprocessorConflagration
 import ElectroMagneticMoat
+import TuringMachine
 
 
 data Cli = Cli {
@@ -81,4 +82,5 @@ main = do
     , Virus.solve
     , CoprocessorConflagration.solve
     , ElectroMagneticMoat.solve
+    , TuringMachine.solve
     ]

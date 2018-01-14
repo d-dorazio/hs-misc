@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: cba6f3e5b62198569e5992107326726aa548be59982635916016e6a3ab295d28
+-- hash: 05668dff3de4c76bf7baac26d1121f9d7fbcc80806fa33ae382b22c940d5d251
 
 name:           aoc17
 version:        0.1.0.0
@@ -62,6 +62,7 @@ library
       SpiralMemory
       Stream
       Tubes
+      TuringMachine
       TwistyTrampolines
       Virus
   other-modules:
