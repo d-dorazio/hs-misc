@@ -38,32 +38,30 @@ regionsCount digests = runST $ do
 
   let digestsBits = map (concatMap (bits . (fromIntegral :: Int -> Word8))) digests
 
-  let mkIx        = \row col -> row * 128 + col
-  let validIx     = \row col -> and . map (\i -> i >= 0 && i < 128) $ [row, col]
+  let mkIx row col = row * 128 + col
+  let validIx row col = all (\i -> i >= 0 && i < 128) [row, col]
 
-  forM_ (indexed digestsBits) $ \(row, bs) -> do
-    forM_ (indexed bs) $ \(col, b) -> do
-      when b $ VM.write mat (mkIx row col) Free
+  forM_ (indexed digestsBits)
+    $ \(row, bs) -> forM_ (indexed bs) $ \(col, b) -> when b $ VM.write mat (mkIx row col) Free
 
-  let updateCell = \row col gro -> do
-        when (validIx row col) $ do
-          cell <- VM.read mat (mkIx row col)
+  let updateCell row col gro = when (validIx row col) $ do
+        cell <- VM.read mat (mkIx row col)
 
-          let updateSiblings = do
-                updateCell row       (col + 1) gro
-                updateCell row       (col - 1) gro
-                updateCell (row + 1) col       gro
-                updateCell (row - 1) col       gro
+        let updateSiblings = do
+              updateCell row       (col + 1) gro
+              updateCell row       (col - 1) gro
+              updateCell (row + 1) col       gro
+              updateCell (row - 1) col       gro
 
-          case cell of
-            Dead       -> return ()
-            Occupied _ -> return ()
-            Free       -> do
-              VM.write mat (mkIx row col) (Occupied gro)
-              updateSiblings
+        case cell of
+          Dead       -> return ()
+          Occupied _ -> return ()
+          Free       -> do
+            VM.write mat (mkIx row col) (Occupied gro)
+            updateSiblings
 
-  let updateGroup = \rowGroup row -> do
-        let foo = \gro col -> do
+  let updateGroup rowGroup row = do
+        let upd gro col = do
               cell <- VM.read mat (mkIx row col)
               case cell of
                 Dead       -> return gro
@@ -72,7 +70,7 @@ regionsCount digests = runST $ do
                   updateCell row col gro
                   return (gro + 1)
 
-        foldM foo rowGroup [0 .. 127]
+        foldM upd rowGroup [0 .. 127]
 
   foldM updateGroup 0 [0 .. 127]
   where indexed = zip [0 ..]

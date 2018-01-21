@@ -1,5 +1,5 @@
 #!/usr/bin/env stack
--- stack --resolver lts-9.0 script --package mtl
+-- stack --resolver lts-10.3 script --package mtl
 
 import Control.Monad.Identity
 
@@ -37,7 +37,7 @@ step (GoTo f) i = f i
 -- Example
 ------------------------------------------------------------
 data Binary = O | I deriving (Eq, Show)
-data Context = Context { runningTime :: Int}
+newtype Context = Context { runningTime :: Int }
 data Result = EngineDead deriving (Eq, Show)
 
 type Machine = Context -> Binary -> IO (StateT Binary Result IO)
@@ -75,7 +75,4 @@ main = do
   case finalState of
     End  r -> putStr "the machine terminated with " >> print r
     GoTo _ -> putStrLn "the machine did not terminate"
- where
-  initialCtx = Context
-    { runningTime = 0
-    }
+  where initialCtx = Context {runningTime = 0}

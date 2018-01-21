@@ -19,6 +19,8 @@ import Control.Applicative ((<|>), some)
 import Control.Monad (foldM)
 import Control.Monad.ST (ST, runST)
 
+import Data.Maybe (fromMaybe)
+
 import qualified Data.HashTable.Class as HT
 import qualified Data.HashTable.ST.Basic as HTB
 
@@ -80,11 +82,9 @@ virusBurst :: (Direction -> Cell -> (Direction, Cell)) -> Int -> [(Pos, Cell)] -
 virusBurst infect n cells = runST $ do
   cellsMap <- HT.fromList cells :: ST a (HTB.HashTable a Pos Cell)
 
-  let burst = \((pos, dir), hist) _ -> do
+  let burst ((pos, dir), hist) _ = do
         mcurrentCell <- HT.lookup cellsMap pos
-        let currentCell = case mcurrentCell of
-              Just c  -> c
-              Nothing -> Clean
+        let currentCell          = fromMaybe Clean mcurrentCell
         let (dir', currentCell') = infect dir currentCell
         let pos'                 = posAdd pos . dirToPos $ dir'
 
@@ -92,10 +92,10 @@ virusBurst infect n cells = runST $ do
         return ((pos', dir'), currentCell' : hist)
 
   let state = (((centre, centre), U), [])
-  fmap (reverse . snd) $ foldM burst state [1 .. n]
+  (reverse . snd) <$> foldM burst state [1 .. n]
  where
   centre :: Int
-  centre = (ceiling (sqrt (fromIntegral $ length cells) :: Float)) `div` 2
+  centre = ceiling (sqrt (fromIntegral $ length cells) :: Float) `div` 2
 
 --------------------------------------------------------------------
 -- Parser

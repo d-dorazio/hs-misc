@@ -1,15 +1,15 @@
 #!/usr/bin/env stack
--- stack --resolver lts-9.2 script
-{-# LANGUAGE BangPatterns, GeneralizedNewtypeDeriving #-}
+-- stack --resolver lts-10.3 script
+{-# LANGUAGE LambdaCase #-}
 
 -- nice and super fun!
 
 import Control.Applicative
+import Control.Arrow (second)
 import Control.Monad (forM_)
-import Control.Monad.Trans.State
 
 import Data.Binary (Word16)
-import Data.Bits (Bits, shiftL, testBit, (.&.))
+import Data.Bits (Bits, testBit)
 import Data.Char (isSpace)
 import Data.Either (isRight)
 import Data.Maybe (fromJust, fromMaybe)
@@ -45,8 +45,8 @@ treeFocus :: [TreeDirection] -> Tree a -> Maybe (Tree a)
 treeFocus [] t = Just t
 treeFocus (d:ds) (Branch _ l r) =
   let st = case d of
-        DLeft     -> l
-        otherwise -> r
+        DLeft  -> l
+        DRight -> r
   in  treeFocus ds st
 treeFocus _ _ = Nothing
 
@@ -70,7 +70,8 @@ decodeRule rule = Rule ruleMap
   f rMap bn = Map.insert (bitNToRuleInput bn) (bitAtToCell rule bn) rMap
 
 bitNToRuleInput :: Bits a => a -> RuleInput
-bitNToRuleInput bn = (bitAtToCell bn 3, bitAtToCell bn 2, bitAtToCell bn 1, bitAtToCell bn 0)
+bitNToRuleInput bn =
+  (bitAtToCell bn 3, bitAtToCell bn 2, bitAtToCell bn 1, bitAtToCell bn 0)
 
 bitAtToCell :: Bits a => a -> Int -> Cell
 bitAtToCell b n = if testBit b n then Alive else Dead
@@ -84,8 +85,9 @@ data Cell = Alive | Dead deriving (Eq, Ord, Show)
 type CA = Tree Cell
 
 prettyCA :: CA -> String
-prettyCA (Leaf c      ) = prettyCell c
-prettyCA (Branch c l r) = '(' : prettyCA l ++ " " ++ prettyCell c ++ " " ++ prettyCA r ++ ")"
+prettyCA (Leaf c) = prettyCell c
+prettyCA (Branch c l r) =
+  '(' : prettyCA l ++ " " ++ prettyCell c ++ " " ++ prettyCA r ++ ")"
 
 prettyCell :: Cell -> String
 prettyCell Alive = "X"
@@ -102,6 +104,7 @@ nextCA r = treeMapWithNeighbors (applyRule r . mkRuleInput)
 ------------------------------------------------
 -- Main
 ------------------------------------------------
+main :: IO ()
 main = do
   rule        <- fmap decodeRule readLn
   (Right ica) <- fmap (parse caParser) getLine
@@ -112,7 +115,7 @@ main = do
 runTest :: Int -> Rule -> Int -> Map.Map Int CA -> IO ()
 runTest _            _    0      _   = return ()
 runTest currentCAKey rule nTests cas = do
-  (rnq:rpath:[]) <- fmap words getLine
+  [rnq, rpath] <- fmap words getLine
 
   let nq           = read rnq
   let (Right path) = parse treeDirectionParser rpath
@@ -167,7 +170,7 @@ treeDirectionParser = brackets $ many direction
 newtype Parser a = Parser (String -> Either String (String, a))
 
 instance Functor Parser where
-  fmap f (Parser p) = Parser $ \s -> fmap (\(r, a) -> (r, f a)) (p s)
+  fmap f (Parser p) = Parser $ \s -> fmap (second f) (p s)
 
 instance Applicative Parser where
   pure v = Parser $ \s -> return (s, v)
@@ -190,7 +193,7 @@ instance Alternative Parser where
   (Parser p) <|> (Parser g) = Parser $ \s ->
     case p s of
       r | isRight r -> r
-      otherwise -> g s
+      _             -> g s
 
 parse :: Parser a -> String -> Either String a
 parse (Parser p) = fmap snd . p
@@ -212,19 +215,20 @@ lexeme :: Char -> Parser Char
 lexeme c = char c <* many space
 
 char :: Char -> Parser Char
-char c = satisfy (==c)
+char c = satisfy (== c)
 
 space :: Parser Char
 space = satisfy isSpace
 
 satisfy :: (Char -> Bool) -> Parser Char
-satisfy pr = Parser $ \s -> case s of
+satisfy pr = Parser $ \case
   []            -> Left "empty input"
   (c:cs) | pr c -> return (cs, c)
-  otherwise     -> Left "not satisfied"
+  _             -> Left "not satisfied"
 
 end :: Parser ()
-end = Parser $ \s -> if null s then return ([], ()) else fail "not reached the end"
+end =
+  Parser $ \s -> if null s then return ([], ()) else fail "not reached the end"
 
 
 ------------------------------------------------
@@ -241,22 +245,29 @@ testDecodeRule = testCases "decodeRule" testIt cases
   testIt encodedRule =
     let (Rule r) = decodeRule encodedRule
     in  if Map.size r /= 16
-          then Left "decodeRule's size is not 16(e.g. not all bits have been read)"
+          then Left
+            "decodeRule's size is not 16(e.g. not all bits have been read)"
           else Right (filter (\(_, c) -> c == Alive) . Map.toList $ r)
 
 testCaParser :: IO ()
 testCaParser = testCases "caParser" (parse caParser) cases
  where
   cases =
-    [ ("X"            , Leaf Alive)
-    , ("."            , Leaf Dead)
-    , ("(X . .)"      , Branch Dead (Leaf Alive) (Leaf Dead))
-    , ("(X . (X . .))", Branch Dead (Leaf Alive) (Branch Dead (Leaf Alive) (Leaf Dead)))
-    , ("((X . .) . X)", Branch Dead (Branch Dead (Leaf Alive) (Leaf Dead)) (Leaf Alive))
+    [ ("X"      , Leaf Alive)
+    , ("."      , Leaf Dead)
+    , ("(X . .)", Branch Dead (Leaf Alive) (Leaf Dead))
+    , ( "(X . (X . .))"
+      , Branch Dead (Leaf Alive) (Branch Dead (Leaf Alive) (Leaf Dead))
+      )
+    , ( "((X . .) . X)"
+      , Branch Dead (Branch Dead (Leaf Alive) (Leaf Dead)) (Leaf Alive)
+      )
     ]
 
 testTreeDirectionParser :: IO ()
-testTreeDirectionParser = testCases "treeDirectionParser" (parse treeDirectionParser) cases
+testTreeDirectionParser = testCases "treeDirectionParser"
+                                    (parse treeDirectionParser)
+                                    cases
  where
   cases =
     [ ("[]"     , [])
@@ -265,14 +276,25 @@ testTreeDirectionParser = testCases "treeDirectionParser" (parse treeDirectionPa
     , ("[<<>><]", [DLeft, DLeft, DRight, DRight, DLeft])
     ]
 
-testCases :: (Eq b, Show a, Show b, Show e) => String -> (a -> Either e b) -> [(a, b)] -> IO ()
+testCases
+  :: (Eq b, Show a, Show b, Show e)
+  => String
+  -> (a -> Either e b)
+  -> [(a, b)]
+  -> IO ()
 testCases title f cases = do
   putStrLn $ "*** Test " ++ title ++ " ***"
 
-  forM_ cases $ \(inp, exp) -> do
-    putStr $ "Test: " ++ (show inp) ++ " -> "
+  forM_ cases $ \(inp, expected) -> do
+    putStr $ "Test: " ++ show inp ++ " -> "
     case f inp of
       Left  err -> print err
-      Right t   -> if t /= exp
-        then putStrLn $ "expected " ++ (show exp) ++ " but got " ++ (show t) ++ " instead"
+      Right t   -> if t /= expected
+        then
+          putStrLn
+          $  "expected "
+          ++ show expected
+          ++ " but got "
+          ++ show t
+          ++ " instead"
         else putStrLn "OK"

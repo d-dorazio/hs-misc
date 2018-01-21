@@ -1,10 +1,9 @@
 #!/usr/bin/env stack
--- stack --resolver lts-9.2 script
+-- stack --resolver lts-10.3 script
 
 -- really cool
 
-sierpinski
-  :: (Int, Int) -> Int -> [String]
+sierpinski :: (Int, Int) -> Int -> [String]
 sierpinski (w, h) 0 = take h . map row $ [1, 3 ..]
  where
   row :: Int -> String
@@ -24,6 +23,7 @@ sierpinski (w, h) n = top ++ bottom
   mh         = h `quot` 2
   mw         = w `quot` 2
 
+main :: IO ()
 main = do
   n <- readLn
   putStrLn . unlines . sierpinski (63, 32) $ n

@@ -1,5 +1,5 @@
 #!/usr/bin/env stack
--- stack --resolver lts-9.0 script --package containers
+-- stack --resolver lts-10.3 script --package containers
 
 import qualified Data.Map as Map
 
@@ -22,7 +22,7 @@ mergeTrie :: (Ord a) => Trie a -> Trie a -> Trie a
 mergeTrie (Trie ce children) (Trie ce' children') =
   let canExit = case (ce, ce') of
         (CannotExit, CannotExit) -> CannotExit
-        otherwise                -> CanExit
+        _                        -> CanExit
   in  Trie canExit $ Map.unionWith mergeTrie children children'
 
 match :: Trie Char -> String -> Bool
@@ -35,7 +35,8 @@ match (Trie _       children) (c:chrs) = case Map.lookup c children of
 -- Automata
 ------------------------------------------------------------
 stringsToTrie :: [String] -> Trie Char
-stringsToTrie = foldl (\trie s -> mergeTrie trie (buildTrie s)) $ Trie CanExit Map.empty
+stringsToTrie =
+  foldl (\trie s -> mergeTrie trie (buildTrie s)) $ Trie CanExit Map.empty
 
 ------------------------------------------------------------
 -- Main
@@ -47,6 +48,6 @@ main = do
   print trie
   mapM_ (\s -> print s >> print (match trie s)) strings
 
-  let t = buildTrie $ "a"
+  let t = buildTrie "a"
   print t
   print . match t $ "a"

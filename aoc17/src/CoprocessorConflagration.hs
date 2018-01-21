@@ -37,8 +37,7 @@ solve Part2 =
   in  const . show . length . filter (not . isPrime) $ [b, b + 17 .. b + 17000]
  where
   isPrime :: Int -> Bool
-  isPrime n =
-    null . filter (\m -> n `mod` m == 0) $ [2 .. ceiling (sqrt (fromIntegral n) :: Float)]
+  isPrime n = (not . any (\m -> n `mod` m == 0)) [2 .. ceiling (sqrt (fromIntegral n) :: Float)]
 
 
 type Register = Char
@@ -71,14 +70,13 @@ readValue _  (Immediate imm) = imm
 readValue sc (RegValue  reg) = M.findWithDefault 0 reg . _coproRegs $ sc
 
 part1Exec :: Coprocessor -> Maybe (Coprocessor, Bool)
-part1Exec isc = let mins = (_coproInstructions isc) V.!? (_coproIp isc) in fmap (exec' isc) mins
+part1Exec isc = let mins = _coproInstructions isc V.!? _coproIp isc in fmap (exec' isc) mins
  where
   exec' sc (Set reg val) = (incIp (execBinOp const sc reg val), False)
   exec' sc (Sub reg val) = (incIp (execBinOp (flip (-)) sc reg val), False)
   exec' sc (Mul reg val) = (incIp (execBinOp (*) sc reg val), True)
-  exec' sc (Jump val off)
-    | readValue sc val /= 0 = (modifyCoproIp ((+) (readValue sc off)) sc, False)
-    | otherwise             = (incIp sc, False)
+  exec' sc (Jump val off) | readValue sc val /= 0 = (modifyCoproIp (readValue sc off +) sc, False)
+                          | otherwise             = (incIp sc, False)
 
   execBinOp fn sc reg val = updateReg (fn (readValue sc val)) sc reg
   incIp sc | _coproIp sc == _coproIp isc = modifyCoproIp (1 +) sc

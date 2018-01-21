@@ -23,7 +23,7 @@ solve :: Part -> String -> String
 solve part = parseOrPrettyErr danceMovesParser $ \moves ->
   let ini = interpretDanceMoves ['a' .. 'p'] moves in go moves (ini, Seq.singleton ['a' .. 'p'])
  where
-  danceMovesParser = danceMoveParser `sepBy` (symbol ",")
+  danceMovesParser = danceMoveParser `sepBy` symbol ","
 
   -- the idea is that eventually the sequence repeats, therefore we keep an array with
   -- what we've seen so far and as soon as we find a configuration we already found then

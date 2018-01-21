@@ -20,7 +20,7 @@ import Lib (Part(..), parseOrPrettyErr, decimal, chunksOf, stripWs)
 
 
 solve :: Part -> String -> String
-solve Part1 inp = parseOrPrettyErr (decimal `sepBy` (char ',')) (show . prodFirst2 . hashBytes) inp
+solve Part1 inp = parseOrPrettyErr (decimal `sepBy` char ',') (show . prodFirst2 . hashBytes) inp
  where
   prodFirst2 (x:y:_) = x * y
   prodFirst2 _       = error "input bug?"
@@ -47,7 +47,7 @@ hashBytes bytes =
     in  (nums', pos', skipSize')
 
   revSubList nums pos len =
-    let ixs = map (`mod` (VU.length nums)) [pos .. pos + len - 1]
+    let ixs = map (`mod` VU.length nums) [pos .. pos + len - 1]
         sub = map (nums VU.!) ixs
     in  (VU.//) nums (zip ixs (reverse sub))
 

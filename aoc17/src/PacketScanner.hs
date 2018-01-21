@@ -31,7 +31,7 @@ buildLayersMap :: [Layer] -> LayersMap
 buildLayersMap lay = M.fromList . zip (map _layerDepth lay) $ lay
 
 severity :: [(Layer, Int)] -> Int
-severity = sum . map layerSeverity . map fst . filter ((== 0) . snd)
+severity = sum . map (layerSeverity . fst) . filter ((== 0) . snd)
 
 layerSeverity :: Layer -> Int
 layerSeverity (Layer dep ran) = dep * ran
@@ -50,7 +50,7 @@ bestInitialDelay lay = go 0
               | otherwise = baseTime
 
 scannerCaughtUs :: [(Layer, Int)] -> Bool
-scannerCaughtUs = (> 0) . length . filter ((== 0) . snd)
+scannerCaughtUs = any ((== 0) . snd)
 
 scannerPos :: Layer -> TimePoint -> Int
 scannerPos (Layer _ ran) t =

@@ -35,10 +35,10 @@ solve part = parseOrPrettyErr towerParser $ \programs ->
       towerRoot = head . S.toList . towerRoots $ tower
   in  case part of
         Part1 -> towerRoot
-        Part2 -> case towerBalance tower $ (tower `getProg` towerRoot) of
+        Part2 -> case towerBalance tower (tower `getProg` towerRoot) of
           Balanced w -> "Balanced at " ++ show w
           Unbalanced unb expWeight ->
-            let prettyUnb = \name curWeight ->
+            let prettyUnb name curWeight =
                   let pr    = tower `getProg` name
                       delta = expWeight - curWeight
                   in  "Unbalanced "
@@ -67,13 +67,13 @@ getProg :: Tower -> String -> Program
 getProg (Tower t) = (M.!) t
 
 towerRoots :: Tower -> S.Set String
-towerRoots (Tower tower) = (M.keysSet nonLeaves) `S.difference` nonLeavesChildren
+towerRoots (Tower tower) = M.keysSet nonLeaves `S.difference` nonLeavesChildren
  where
   nonLeavesChildren :: S.Set String
   nonLeavesChildren = foldr (\prog acc -> acc `S.union` _progChildren prog) S.empty nonLeaves
 
   nonLeaves :: M.Map String Program
-  nonLeaves = M.filter (not . null . _progChildren) $ tower
+  nonLeaves = M.filter (not . null . _progChildren) tower
 
 
 data Balance = Balanced Int | Unbalanced (M.Map String Int) Int deriving (Show)
@@ -96,7 +96,7 @@ towerBalance tower prog = case M.filter isUnbalanced childrenBalance of
     = Balanced progWeight
     | otherwise
     = let childrenWeights  = M.map (\(Balanced w) -> w) childrenBalance
-          mostCommonWeight = head . reverse . sortByLeastCommon . M.elems $ childrenWeights
+          mostCommonWeight = last . sortByLeastCommon . M.elems $ childrenWeights
           unbalancedProgs  = M.filter (/= mostCommonWeight) childrenWeights
       in  if null unbalancedProgs
             then Balanced (progWeight + mostCommonWeight * M.size childrenProgs)
@@ -119,4 +119,4 @@ programParser = Program <$> iden <*> parens decimal <*> (children <|> return S.e
   iden     = lexeme $ some letterChar
   children = do
     _ <- symbol "->"
-    S.fromList <$> iden `sepBy` (symbol ", ")
+    S.fromList <$> iden `sepBy` symbol ", "

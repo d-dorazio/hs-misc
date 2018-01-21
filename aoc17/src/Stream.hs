@@ -45,4 +45,4 @@ garbageParser :: Parser CharStream
 garbageParser = Garbage <$> between (char '<') (char '>') (concat <$> many garbageToks)
  where
   garbageToks :: Parser String
-  garbageToks = ((char '!' >> anyChar >> return "") <|> (fmap (: "") (notChar '>')))
+  garbageToks = (char '!' >> anyChar >> return "") <|> fmap (: "") (notChar '>')

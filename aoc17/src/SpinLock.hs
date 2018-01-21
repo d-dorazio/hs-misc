@@ -22,7 +22,7 @@ type Buffer = Seq.Seq Int
 
 firstAfter :: Int -> Buffer -> Maybe Int
 firstAfter val buf =
-  fmap (\i -> Seq.index buf ((i + 1) `mod` (Seq.length buf))) $ Seq.elemIndexL val buf
+  (\i -> Seq.index buf ((i + 1) `mod` Seq.length buf)) <$> Seq.elemIndexL val buf
 
 spinLockRun :: Int -> Int -> Buffer
 spinLockRun size steps = go 0 (Seq.singleton 0)

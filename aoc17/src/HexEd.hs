@@ -18,7 +18,7 @@ solve :: Part -> String -> String
 solve pa = parseOrPrettyErr dirsParser $ \dirs -> case pa of
   Part1 -> show . distance . last . moveToDirs $ dirs
   Part2 -> show . maximum . map distance . moveToDirs $ dirs
-  where dirsParser = dirParser `sepBy` (char ',')
+  where dirsParser = dirParser `sepBy` char ','
 
 
 data Direction = Nw | N | Ne | Se | S | Sw deriving (Show)

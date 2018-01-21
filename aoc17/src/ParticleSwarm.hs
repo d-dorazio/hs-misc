@@ -10,10 +10,11 @@ module ParticleSwarm (
 ) where
 
 import Control.Applicative (many)
+import Control.Arrow (second)
 import Control.Monad (void)
 
 import Data.Function (on)
-import Data.List (sortBy)
+import Data.List (minimumBy)
 
 import qualified Data.Map as M
 
@@ -26,17 +27,16 @@ solve part = parseOrPrettyErr (many particleParser) $ \particles ->
   let ipar = zip [0 ..] particles
   in  case part of
         Part1 ->
-          let simulated = foldr (\_ -> moveAll) ipar ([1 .. 5000] :: [Int])
+          let simulated = foldr (const moveAll) ipar ([1 .. 5000] :: [Int])
           in  (show :: Int -> String)
               . fst
-              . head
-              . sortBy (compare `on` (particleDist . snd))
+              . minimumBy (compare `on` (particleDist . snd))
               $ simulated
         Part2 ->
           let simulated = foldr (\_ -> removeCollided . moveAll) ipar ([1 .. 1000] :: [Int])
           in  show . length $ simulated
  where
-  moveAll = map (\(i, p) -> (i, particleMove p))
+  moveAll = map (second particleMove)
 
   removeCollided parts = map head . M.elems . M.filter ((== 1) . length) $ particlesMap
    where
@@ -82,7 +82,7 @@ particleParser = do
   particleFieldP pref = do
     _ <- symbol pref
     _ <- symbol "="
-    angles (pos3dP)
+    angles pos3dP
 
 pos3dP :: Parser Pos3d
 pos3dP = do

@@ -56,7 +56,7 @@ main = do
   let fn = solutions !! (_day cli - 1)
   putStrLn . fn (_part cli) $ inp
  where
-  showFn f = \pa inp -> show $ f pa inp
+  showFn f pa inp = show $ f pa inp
   solutions =
     [ showFn Captcha.solve
     , showFn Checksum.solve

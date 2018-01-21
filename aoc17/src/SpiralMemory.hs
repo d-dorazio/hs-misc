@@ -95,7 +95,7 @@ solve' Part2 val vec = V.foldr go Nothing vec
           (ms, Nothing)             -> Just . VU.minimum $ ms
           (ms, Just m )             -> Just . min m $ VU.minimum ms
 
-solve' Part1 val vec = V.ifoldr go Nothing $ vec
+solve' Part1 val vec = V.ifoldr go Nothing vec
  where
   center :: Int
   center = V.length vec `div` 2

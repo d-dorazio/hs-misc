@@ -48,7 +48,7 @@ type EnhancementRule = (Grid, Grid)
 newtype EnhancementRules = EnhancementRules (M.Map Grid Grid) deriving (Show)
 
 step :: EnhancementRules -> Grid -> Grid
-step rules grid = mapSubSquares (enhance rules) grid
+step rules = mapSubSquares (enhance rules)
 
 mapSubSquares :: (Grid -> Grid) -> Grid -> Grid
 mapSubSquares rules xs = chunksOf n xs >>= map concat . transpose . map rules . transpose . map
@@ -79,6 +79,6 @@ enhancementRuleParser = do
   return (from, to)
 
 gridParser :: Parser Grid
-gridParser = (some pixelParser) `sepBy` symbol "/"
+gridParser = some pixelParser `sepBy` symbol "/"
   where pixelParser = (const On <$> char '#') <|> (const Off <$> char '.')
 

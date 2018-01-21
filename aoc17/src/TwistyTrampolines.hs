@@ -20,7 +20,7 @@ solve part inp = runST $ do
  where
   inc = case part of
     Part1 -> (1 +)
-    Part2 -> (\c -> if c >= 3 then c - 1 else c + 1)
+    Part2 -> \c -> if c >= 3 then c - 1 else c + 1
 
 
 solve' :: (PrimMonad m) => (Int -> Int) -> Int -> VM.MVector (PrimState m) Int -> m Int

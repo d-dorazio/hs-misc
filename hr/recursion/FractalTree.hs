@@ -1,13 +1,12 @@
 #!/usr/bin/env stack
--- stack --resolver lts-9.2 script
+-- stack --resolver lts-10.3 script
 
 -- nice!!
 
-fracTree
-  :: (Int, Int) -> Int -> Int -> [String]
+fracTree :: (Int, Int) -> Int -> Int -> [String]
 fracTree (w, h) branchSize 1 = top ++ center ++ bottom
  where
-  top    = take (h - branchSize * 2) . repeat . replicate w $ '_'
+  top    = replicate (h - branchSize * 2) . replicate w $ '_'
 
   center = reverse . take branchSize . map centerRow $ [0 ..]
   centerRow i =
@@ -16,9 +15,9 @@ fracTree (w, h) branchSize 1 = top ++ center ++ bottom
     in  lbranch ++ replicate (i * 2 + 1) '_' ++ rbranch
 
   bottom     = replicate branchSize bottomLine
-  bottomLine = replicate (mw - 1) '_' ++ ('1' : replicate (mw) '_')
+  bottomLine = replicate (mw - 1) '_' ++ ('1' : replicate mw '_')
 
-  (mw, mh)   = (w `quot` 2, h `quot` 2)
+  (mw, _)    = (w `quot` 2, h `quot` 2)
 
 fracTree (w, h) branchSize n = top ++ bottom
  where
@@ -28,8 +27,9 @@ fracTree (w, h) branchSize n = top ++ bottom
 
   bottom     = fracTree (w, mh) branchSize 1
 
-  (mw, mh)   = (w `quot` 2, h `quot` 2)
+  (_, mh)    = (w `quot` 2, h `quot` 2)
 
+main :: IO ()
 main = do
   n <- readLn
   putStrLn . unlines . fracTree (100, 63) 16 $ n

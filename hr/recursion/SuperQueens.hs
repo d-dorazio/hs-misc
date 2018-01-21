@@ -1,5 +1,5 @@
 #!/usr/bin/env stack
--- stack --resolver lts-9.2 script
+-- stack --resolver lts-10.3 script
 import qualified Data.Set as Set
 
 -- quite nice indeed!
@@ -18,10 +18,18 @@ superQueens :: Int -> [[Pos]]
 superQueens = superQueens' (1000, 1000) 1 Set.empty Set.empty Set.empty
 
 
-superQueens' :: (Int, Int) -> Int -> Set.Set Int -> Set.Set Int -> Set.Set Int -> Int -> [[Pos]]
+superQueens'
+  :: (Int, Int)
+  -> Int
+  -> Set.Set Int
+  -> Set.Set Int
+  -> Set.Set Int
+  -> Int
+  -> [[Pos]]
 superQueens' (lastC, secondLastC) nRow columns diags antiDiags n
-  | nRow > n  = [[]]
-  | otherwise = concatMap (\col -> map ((nRow, col):) $ subSuperQueens col) queensCols
+  | nRow > n = [[]]
+  | otherwise = concatMap (\col -> map ((nRow, col) :) $ subSuperQueens col)
+                          queensCols
  where
   queensCols :: [Int]
   queensCols =
@@ -30,8 +38,8 @@ superQueens' (lastC, secondLastC) nRow columns diags antiDiags n
     , abs (c - lastC) /= 2
     , abs (c - secondLastC) /= 1
     , columns `notContains` c
-    , diags `notContains` (diag (nRow, c))
-    , antiDiags `notContains` (antiDiag (nRow, c))
+    , diags `notContains` diag (nRow, c)
+    , antiDiags `notContains` antiDiag (nRow, c)
     ]
 
   subSuperQueens :: Int -> [[Pos]]

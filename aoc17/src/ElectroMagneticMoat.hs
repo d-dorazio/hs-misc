@@ -8,6 +8,8 @@ module ElectroMagneticMoat (
   , portParser
 ) where
 
+import Control.Arrow ((&&&))
+
 import qualified Data.Set as S
 import qualified Data.Map.Strict as M
 
@@ -21,7 +23,7 @@ solve pa = parseOrPrettyErr (some portParser) $ \ports ->
       brid    = bridges portMap 0 S.empty
   in  case pa of
         Part1 -> show . maximum . map score $ brid
-        Part2 -> show . snd . maximum . map (\b -> (S.size b, score b)) $ brid
+        Part2 -> show . snd . maximum . map (S.size &&& score) $ brid
 
 type Bridge = S.Set Port
 type Port = (Int, Int)
@@ -40,7 +42,7 @@ bridges portMap start bridge = case portMap M.!? start of
     in  if S.member port bridge then acc else acc ++ bridges portMap end (S.insert port bridge)
 
 score :: Foldable t => t Port -> Int
-score ps = foldr (\(f, t) acc -> acc + f + t) 0 ps
+score = foldr (\(f, t) acc -> acc + f + t) 0
 
 
 --------------------------------------------------------------------

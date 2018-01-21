@@ -99,11 +99,11 @@ recoverSound sc = case _actorOutChannel sc of
 soundExecUntilRecover :: Actor -> Maybe Int
 soundExecUntilRecover sc = case _actorInChannel sc of
   (freq:_) -> Just freq
-  _        -> (soundExec sc) >>= soundExecUntilRecover
+  _        -> soundExec sc >>= soundExecUntilRecover
 
 soundExec :: Actor -> Maybe Actor
 soundExec isc =
-  let mins = (_actorInstructions isc) V.!? (_actorIp isc) in fmap (incIp . exec' isc) mins
+  let mins = _actorInstructions isc V.!? _actorIp isc in fmap (incIp . exec' isc) mins
  where
   exec' sc (Send s) = actorSend sc (readValue sc s)
   exec' sc (Receive reg) | readValue sc (RegValue reg) /= 0 = recoverSound sc
@@ -113,7 +113,7 @@ soundExec isc =
   exec' sc (Add reg val) = execBinOp (+) sc reg val
   exec' sc (Mul reg val) = execBinOp (*) sc reg val
   exec' sc (Mod reg val) = execBinOp (flip mod) sc reg val
-  exec' sc (Jump val off) | readValue sc val > 0 = modifyActorIp ((+) (readValue sc off)) sc
+  exec' sc (Jump val off) | readValue sc val > 0 = modifyActorIp (readValue sc off +) sc
                           | otherwise            = sc
 
   execBinOp fn sc reg val = updateReg (fn (readValue sc val)) sc reg
@@ -141,7 +141,7 @@ actor2ExecUntilDeadLock ac0 ac1 =
 
 -- shamelessly copy and pasted and hammered :)
 actorExec :: Actor -> Maybe Actor
-actorExec ac = let mins = (_actorInstructions ac) V.!? (_actorIp ac) in fmap (exec' ac) mins
+actorExec ac = let mins = _actorInstructions ac V.!? _actorIp ac in fmap (exec' ac) mins
  where
   exec' sc (Send    s  ) = incIp $ actorSend sc (readValue sc s)
   exec' sc (Receive reg) = case _actorInChannel sc of
@@ -154,8 +154,8 @@ actorExec ac = let mins = (_actorInstructions ac) V.!? (_actorIp ac) in fmap (ex
   exec' sc (Add reg val) = incIp $ execBinOp (+) sc reg val
   exec' sc (Mul reg val) = incIp $ execBinOp (*) sc reg val
   exec' sc (Mod reg val) = incIp $ execBinOp (flip mod) sc reg val
-  exec' sc (Jump val off) | readValue sc val > 0 = modifyActorIp ((+) (readValue sc off)) sc
-                          | otherwise            = incIp $ sc
+  exec' sc (Jump val off) | readValue sc val > 0 = modifyActorIp (readValue sc off +) sc
+                          | otherwise            = incIp sc
 
   execBinOp fn sc reg val = updateReg (fn (readValue sc val)) sc reg
   incIp = modifyActorIp (1 +)

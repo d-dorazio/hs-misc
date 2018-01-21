@@ -90,7 +90,7 @@ turingMachineParser = do
   initialState <- beginP
   steps        <- stepsP
   transitions  <- some transitionsP
-  return $ TuringMachine
+  return TuringMachine
     { _machineState         = initialState
     , _machineTape          = mkTape
     , _machineTransitions   = M.fromList . concat $ transitions
@@ -113,7 +113,7 @@ transitionP = do
   move     <- between (symbol "- Move one slot to the") dot moveP
   newState <- between (symbol "- Continue with state") dot letterChar
 
-  return $ Transition
+  return Transition
     { _transitionNewReg   = newVal
     , _transitionTapeMove = move
     , _transitionNewState = newState
